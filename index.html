@@ -211,7 +211,7 @@ details.thread summary{cursor:pointer;font-size:13px;color:var(--muted)}
 .dlgrid .btn{text-align:left}
 @media (max-width:820px){.hero{grid-template-columns:1fr;gap:22px;padding-block:8px 24px}.points{grid-template-columns:1fr;gap:14px}}
 @media (max-width:600px){header.top .who{margin-left:auto!important;width:auto!important}}
-.share{display:grid;gap:6px}
+.share{display:flex}
 .leaflet-popup .share{margin-top:8px}
 .leaflet-popup .share .btn{padding:3px 8px;font-size:12px}
 .layers-close{display:block;margin:6px 0 0 auto;background:none;border:1px solid var(--line);border-radius:4px;padding:2px 8px;font-size:11.5px;cursor:pointer;color:var(--fg)}
@@ -479,18 +479,15 @@ const enc=encodeURIComponent;
 function shareUrl(h){return location.href.split("#")[0]+"#"+h;}
 function shareBox(h,title){
   const url=shareUrl(h);
-  return `<div class="share"><span class="label">Teilen</span><div class="actions">
-    <button class="btn small" type="button" data-share-copy="${esc(url)}">Link kopieren</button>
-    <a class="btn small" target="_blank" rel="noopener" href="https://wa.me/?text=${enc(title+" "+url)}">WhatsApp</a>
-    <a class="btn small" href="mailto:?subject=${enc(title)}&amp;body=${enc(title+"\n"+url)}">E-Mail</a>
-    ${navigator.share?`<button class="btn small" type="button" data-share-native="${esc(url)}" data-share-title="${esc(title)}">Mehr …</button>`:""}
-  </div></div>`;
+  return `<div class="share"><button class="btn small" type="button" data-share="${esc(url)}" data-share-title="${esc(title)}">Teilen</button></div>`;
 }
+function copyLink(u,host){(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>toast("Link kopiert")).catch(()=>{const i=document.createElement("input");i.value=u;i.className="mono";i.style.width="100%";host.appendChild(i);i.select();toast("Link markiert, bitte kopieren");});}
 document.addEventListener("click",e=>{
-  const c=e.target.closest("[data-share-copy]");
-  if(c){const u=c.dataset.shareCopy;(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>toast("Link kopiert")).catch(()=>{const i=document.createElement("input");i.value=u;i.className="mono";i.style.width="100%";c.closest(".share").appendChild(i);i.select();toast("Link markiert, bitte kopieren");});return;}
-  const n=e.target.closest("[data-share-native]");
-  if(n){navigator.share({title:n.dataset.shareTitle,url:n.dataset.shareNative}).catch(()=>{});}
+  const n=e.target.closest("[data-share]"); if(!n) return;
+  const u=n.dataset.share;
+  /* Teilen-Dialog des Geräts; wo es keinen gibt (z. B. Firefox am PC), wird der Link kopiert */
+  if(navigator.share) navigator.share({title:n.dataset.shareTitle,url:u}).catch(err=>{if(err&&err.name!=="AbortError")copyLink(u,n.parentNode);});
+  else copyLink(u,n.parentNode);
 });
 function openHash(){
   const h=decodeURIComponent(location.hash.slice(1)); if(!h||!map||!S.user) return;
