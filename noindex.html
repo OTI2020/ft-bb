@@ -211,6 +211,7 @@ details.thread summary{cursor:pointer;font-size:13px;color:var(--muted)}
 .dlgrid .btn{text-align:left}
 @media (max-width:820px){.hero{grid-template-columns:1fr;gap:22px;padding-block:8px 24px}.points{grid-template-columns:1fr;gap:14px}}
 @media (max-width:600px){header.top .who{margin-left:auto!important;width:auto!important}}
+.search{border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:8px 10px;width:100%;min-width:0}
 .share{display:flex}
 .leaflet-popup .share{margin-top:8px}
 .leaflet-popup .share .btn{padding:3px 8px;font-size:12px}
@@ -230,9 +231,9 @@ details.thread summary{cursor:pointer;font-size:13px;color:var(--muted)}
   </div>
   <div class="hero">
     <div class="hero-text">
-      <div class="label">Tauschbörse für Waldflurstücke · Brandenburg</div>
-      <h2>Aus verstreuten Waldstücken wird ein zusammenhängender Wald.</h2>
-      <p>Stellen Sie Ihr Flurstück anonym ein, sehen Sie Baumart, Alter und Lage auf der Karte und finden Sie Nachbarn, mit denen ein Tausch für beide Seiten passt.</p>
+      <div class="label">Tauschbörse für Wald, Wiese, Acker und Wege · Brandenburg</div>
+      <h2>Aus verstreuten Flächen wird zusammenhängendes Land.</h2>
+      <p>Stellen Sie Wald, Wiese, Acker oder Wege anonym ein, sehen Sie Lage und Bestand auf der Karte und finden Sie Nachbarn, mit denen ein Tausch für beide Seiten passt.</p>
       <div class="note" id="noJs"><strong>Die Seite ist noch nicht gestartet.</strong> Wenn die Knöpfe nicht reagieren, läuft die Datei in einer Vorschau ohne JavaScript. Bitte im Browser öffnen (Chrome, Edge, Firefox oder Safari).</div>
       <div class="actions">
         <button class="btn primary" type="button" id="homeLogin" data-go-login>Anmelden</button>
@@ -264,7 +265,7 @@ details.thread summary{cursor:pointer;font-size:13px;color:var(--muted)}
     <form class="login-card" id="loginForm" autocomplete="off">
       <div class="brand">
         <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><rect x="1" y="1" width="38" height="38" rx="6" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--forest)"/><path d="M6 30 L16 10 L20 18 L24 12 L34 30 Z" fill="var(--forest)"/><path d="M20 4 V36" stroke="var(--surface)" stroke-width="2" stroke-dasharray="3 3"/></svg>
-        <div><h1>Flurtausch</h1><div class="muted">Tauschbörse für Waldflurstücke in Brandenburg</div></div>
+        <div><h1>Flurtausch</h1><div class="muted">Tauschbörse für land- und forstwirtschaftliche Flächen in Brandenburg</div></div>
       </div>
       <div class="field">
         <label class="label" for="demoAcc">Testzugang wählen</label>
@@ -412,6 +413,9 @@ const SEED_PARCELS = [
   {id:"p11",owner:"u1", gem:"Marienthal",     flur:"4", fst:"207",   use:"wald",  c:[53.0968,13.1990], w:130,h:120,rot:40, bestand:"Kiefer, ca. 50 J.", zuweg:"Waldweg", listed:false, anon:true, wunsch:"", art:"biete"},
   {id:"p12",owner:"u6", gem:"Dannenwalde",    flur:"3", fst:"110",   use:"wald",  c:[53.0800,13.1625], w:160,h:120,rot:10, bestand:"Kiefer/Birke, ca. 50 J.", zuweg:"Waldweg", listed:true, anon:true, wunsch:"Geerbte Splitterfläche, liegt weit weg von meinem übrigen Wald.", art:"biete"},
   {id:"p13",owner:"u2", gem:"Seilershof",     flur:"2", fst:"11",    use:"wald",  c:[53.0392,13.1900], w:140,h:110,rot:-15,bestand:"Kiefer, ca. 40 J.", zuweg:"Forstweg", listed:false, anon:true, wunsch:"", art:"biete"},
+  {id:"p14",owner:"u8", gem:"Dannenwalde",    flur:"2", fst:"71",    use:"weg",   c:[53.0868,13.1705], w:520,h:5,  rot:24, bestand:"Unbefestigter Wirtschaftsweg, ca. 520 m lang, 5 m breit", zuweg:"an Gemeindestraße angebunden", listed:true, anon:true, wunsch:"Weg ohne eigene Nutzung. Abgabe an Anlieger oder Tausch gegen Ackerfläche.", art:"biete"},
+  {id:"p15",owner:"u5", gem:"Seilershof",     flur:"3", fst:"22",    use:"acker", c:[53.0452,13.2105], w:260,h:150,rot:10, bestand:"Ackerland, Ackerzahl ca. 25, pachtfrei ab 2027", zuweg:"Feldweg", listed:true, anon:true, wunsch:"Tausche Acker gegen Grünland oder Wald in Ortsnähe.", art:"biete"},
+  {id:"p16",owner:"u9", gem:"Großwoltersdorf",flur:"7", fst:"58",    use:"wiese", c:[53.0325,13.2380], w:180,h:120,rot:-5, bestand:"Dauergrünland, zweischürig, Grünlandzahl ca. 35", zuweg:"Feldweg", listed:true, anon:false, wunsch:"Suche Ackerfläche gleicher Größe im Tausch.", art:"suche"},
   {id:"p10",owner:"u10",gem:"Dannenwalde",    flur:"2", fst:"64",    use:"wiese", c:[53.0790,13.1708], w:35, h:30, rot:0,  bestand:"Grünland, eingeschlossen in Fremdfläche, kein Zugang", zuweg:"keine (Insellage)", listed:true, anon:true, wunsch:"Kleine Wiese mitten in fremder Fläche. Tausch gegen Fläche mit Zugang oder Abgabe an Umlieger.", art:"biete"}
 ];
 const SEED_OFFERS = [
@@ -421,12 +425,12 @@ const SEED_OFFERS = [
   {id:"o3", from:"u10",to:"u1", give:"p10",want:"p1", msg:"Die kleine Wiese grenzt an Ihre Fläche. Würden Sie sie gegen einen Teil tauschen oder übernehmen?", status:"offen", ts:"2026-11-05"}
 ];
 const LAKES = [{n:"Großer Wentowsee (ca.)", c:[53.0597,13.2236]}];
-const USE_LABEL = {wald:"Wald", wiese:"Wiese / Grünland", acker:"Acker"};
-const STORE_KEY = "flurtausch-demo-v3";
+const USE_LABEL = {wald:"Wald", wiese:"Wiese / Grünland", acker:"Acker", weg:"Weg"};
+const STORE_KEY = "flurtausch-demo-v4";
 /* Baumart und Alter für die Wertschätzung, Eigentumsnachweis */
 const VERIFIED = {p4:"pruef"};
 /* Beispielwerte, keine amtlichen Bodenrichtwerte (BORIS) */
-const BRW = {wald:0.60, wiese:0.75, acker:1.20};
+const BRW = {wald:0.60, wiese:0.75, acker:1.20, weg:0.30};
 /* Vorrat aus Mittelhöhe (Faustformel je Baumartengruppe), Erlös = grober Abtriebswert netto */
 const GROUPS = {kie:{n:"Kiefer",k:13,erl:28,c:["GKI","WKI","MKI"]},nad:{n:"Fichte/Lärche/Douglasie",k:15,erl:35,c:["GFI","SFI","ELA","JLA","GDG","KTA","NTA"]},bu:{n:"Buche/Edellaub",k:14,erl:40,c:["RBU","HBU","BAH","SAH","GES","WLI","VKB","RUS"]},ei:{n:"Eiche",k:12,erl:60,c:["SEI","TEI","EI","REI","RO"]},wei:{n:"Weichlaub",k:10,erl:15,c:["GBI","RER","WER","AS","PAS","SPA","HPA","BPA","WEB"]}};
 const groupOf = code => { for(const [k,g] of Object.entries(GROUPS)) if(g.c.includes(code)) return g; return GROUPS.wei; };
@@ -543,7 +547,7 @@ document.getElementById("resetBtn").addEventListener("click",()=>{
 });
 
 /* ============ Karte ============ */
-let BASES, map, layerGroup, drawLayer, selected=null, tab="market", filt={use:"alle", art:"alle"}, draft=null, drawing=false, pendingOffer=null;
+let BASES, map, layerGroup, drawLayer, selected=null, tab="market", filt={use:"alle", art:"alle", q:""}, sf={ea:"alle", art:"alle"}, sfOpen=false, STANDGRP=null, draft=null, drawing=false, pendingOffer=null;
 function initMap(){
   if(map) {setTimeout(()=>map.invalidateSize(),50); return;}
   map = L.map("map",{zoomControl:true}).setView([53.072,13.195],13);
@@ -595,6 +599,7 @@ function buildStandLayer(){
   });
   grp.options.attribution='Waldbestände: © Landesbetrieb Forst Brandenburg, dl-de/by-2-0 (Daten geändert)';
   grp.getAttribution=function(){return this.options.attribution;};
+  STANDGRP=grp;
   return grp;
 }
 function standPopup(st){
@@ -621,12 +626,24 @@ function visibleParcels(forMap){
   return S.parcels.filter(p=>{
     if(p.owner===S.user) return true;
     if(!p.listed) return false;
-    if(!forMap && filt.use!=="alle" && p.use!==filt.use) return false;
-    if(!forMap && filt.art!=="alle" && p.art!==filt.art) return false;
+    if(filt.use!=="alle" && p.use!==filt.use) return false;
+    if(filt.art!=="alle" && p.art!==filt.art) return false;
+    if(filt.q){const t=[p.gem,"Flur "+p.flur,p.fst,USE_LABEL[p.use],bestandText(p),p.bestand,p.wunsch].join(" ").toLowerCase(); if(!filt.q.toLowerCase().split(/\s+/).every(w=>t.includes(w))) return false;}
     return true;
   });
 }
+const EA_GROUP={P:"privat",L:"land",W:"land",T:"bvvg"};
+function standMatches(st){
+  if(sf.ea!=="alle" && (EA_GROUP[st.ea]||"sonst")!==sf.ea) return false;
+  if(sf.art==="nadel" && !(st.b&&NADEL.includes(st.b))) return false;
+  if(sf.art==="laub" && !(st.b&&!NADEL.includes(st.b))) return false;
+  return true;
+}
+function applyStandFilter(){ if(!STANDGRP) return 0; let n=0;
+  STANDPOLYS.forEach(([pl,st])=>{const ok=standMatches(st), has=STANDGRP.hasLayer(pl); if(ok){n++; if(!has)STANDGRP.addLayer(pl);} else if(has) STANDGRP.removeLayer(pl);});
+  return n; }
 function select(id,fly=true){
+  { const p0=parcel(id); if(p0 && p0.owner!==S.user && !visibleParcels(false).includes(p0)){filt.use="alle";filt.art="alle";filt.q="";} }
   selected=id; const p=parcel(id);
   if(p.owner===S.user && tab!=="mine") tab="mine";
   else if(p.owner!==S.user && tab!=="market") tab="market";
@@ -699,14 +716,29 @@ function render(){
 }
 
 function filterBar(){
-  const uses=[["alle","Alle"],["wald","Wald"],["wiese","Wiese"],["acker","Acker"]];
+  const uses=[["alle","Alle"],["wald","Wald"],["wiese","Wiese"],["acker","Acker"],["weg","Weg"]];
   const arts=[["alle","Alle"],["biete","Bietet Tausch"],["suche","Sucht Fläche"]];
-  return `<div class="filters" aria-label="Nutzung">${uses.map(([k,l])=>`<button class="chip" data-fu="${k}" aria-pressed="${filt.use===k}">${l}</button>`).join("")}</div>
+  const eas=[["alle","Alle"],["privat","Privatwald"],["land","Landeswald"],["bvvg","BVVG / Treuhand"],["sonst","Sonstige"]];
+  const sarts=[["alle","Alle"],["nadel","Nadelwald"],["laub","Laubwald"]];
+  const nShown=STANDPOLYS.filter(([,st])=>standMatches(st)).length;
+  return `<input id="q" type="search" class="search" placeholder="Suchen: Gemarkung, Flurstück, Baumart …" value="${esc(filt.q)}" aria-label="Inserate durchsuchen">
+  <details class="thread" id="sfBox" ${sfOpen?"open":""}><summary>Waldbestände auf der Karte filtern${sf.ea!=="alle"||sf.art!=="alle"?` · ${nShown.toLocaleString("de-DE")} von ${STANDPOLYS.length.toLocaleString("de-DE")}`:""}</summary>
+    <div style="display:grid;gap:6px;margin-top:8px">
+      <div class="filters" aria-label="Eigentumsart">${eas.map(([k,l])=>`<button class="chip" data-se="${k}" aria-pressed="${sf.ea===k}">${l}</button>`).join("")}</div>
+      <div class="filters" aria-label="Bestand">${sarts.map(([k,l])=>`<button class="chip" data-sa="${k}" aria-pressed="${sf.art===k}">${l}</button>`).join("")}</div>
+      <div class="hint">Gilt für die Ebene „Waldbestände“. Eigentumsart laut Forstgrundkarte.</div>
+    </div></details>
+  <div class="label">Inserate</div>
+  <div class="filters" aria-label="Nutzung">${uses.map(([k,l])=>`<button class="chip" data-fu="${k}" aria-pressed="${filt.use===k}">${l}</button>`).join("")}</div>
   <div class="filters" aria-label="Art">${arts.map(([k,l])=>`<button class="chip" data-fa="${k}" aria-pressed="${filt.art===k}">${l}</button>`).join("")}</div>`;
 }
 function bindFilters(){
-  view.querySelectorAll("[data-fu]").forEach(b=>b.onclick=()=>{filt.use=b.dataset.fu; render();});
-  view.querySelectorAll("[data-fa]").forEach(b=>b.onclick=()=>{filt.art=b.dataset.fa; render();});
+  view.querySelectorAll("[data-fu]").forEach(b=>b.onclick=()=>{filt.use=b.dataset.fu; renderLayers(); render();});
+  view.querySelectorAll("[data-se]").forEach(b=>b.onclick=()=>{sf.ea=b.dataset.se; sfOpen=true; applyStandFilter(); render();});
+  view.querySelectorAll("[data-sa]").forEach(b=>b.onclick=()=>{sf.art=b.dataset.sa; sfOpen=true; applyStandFilter(); render();});
+  const box=view.querySelector("#sfBox"); if(box) box.addEventListener("toggle",()=>{sfOpen=box.open;});
+  const q=view.querySelector("#q"); if(q) q.addEventListener("input",()=>{filt.q=q.value; renderLayers(); render(); const n=view.querySelector("#q"); n.focus(); n.setSelectionRange(n.value.length,n.value.length);});
+  view.querySelectorAll("[data-fa]").forEach(b=>b.onclick=()=>{filt.art=b.dataset.fa; renderLayers(); render();});
 }
 function card(p){
   const a=areaM2(p.poly);
@@ -723,7 +755,7 @@ function renderMarket(){
   const sel = selected && parcel(selected) && parcel(selected).owner!==S.user ? parcel(selected) : null;
   if(sel){ view.innerHTML = detail(sel); bindDetail(sel); return; }
   view.innerHTML = `${filterBar()}
-    <div class="muted" style="font-size:13px">${list.length} Inserate im Testgebiet. Grün markiert: liegt unter 1 km von einer Ihrer Flächen.</div>
+    <div class="muted" style="font-size:13px">${list.length} ${list.length===1?"Inserat":"Inserate"}${filt.q||filt.use!=="alle"||filt.art!=="alle"?" für diesen Filter":" im Testgebiet"}. Grün markiert: liegt unter 1 km von einer Ihrer Flächen.</div>
     ${list.sort((a,b)=>(nearestMine(a)?.d??9e9)-(nearestMine(b)?.d??9e9)).map(card).join("")||'<div class="note">Keine Inserate für diesen Filter.</div>'}`;
   bindFilters(); bindCards();
 }
